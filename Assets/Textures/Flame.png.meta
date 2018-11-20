@@ -1,0 +1,583 @@
+fileFormatVersion: 2
+guid: ab7939d3d6bbb574a86ab3f67b1aa253
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: you_rock_0
+    21300002: you_rock_1
+    21300004: you_rock_2
+    21300006: you_rock_3
+    21300008: you_rock_4
+    21300010: you_rock_5
+    21300012: you_rock_6
+    21300014: you_rock_7
+    21300016: you_rock_8
+    21300018: you_rock_9
+    21300020: you_rock_10
+    21300022: you_rock_11
+    21300024: you_rock_12
+    21300026: you_rock_13
+    21300028: you_rock_14
+    21300030: you_rock_15
+  externalObjects: {}
+  serializedVersion: 7
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: -1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 2
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 25
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 1
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Windows Store Apps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: you_rock_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 768
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -13, y: -108}
+        - {x: -13, y: -84}
+        - {x: 14, y: -84}
+        - {x: 14, y: -108}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b37a7582ae892f2408e9b0564d359e50
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 768
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -16, y: -108}
+        - {x: -19, y: -76}
+        - {x: 13, y: -79}
+        - {x: 16, y: -111}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a6c6831642e6be499db8b619294bffe
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 768
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -23, y: -114}
+        - {x: -23, y: -75}
+        - {x: 27, y: -75}
+        - {x: 27, y: -114}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2676d954c70a2e74f861edd5bad5e51d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 768
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -24, y: -116}
+        - {x: -24, y: -66}
+        - {x: 25, y: -66}
+        - {x: 25, y: -116}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fb3ac65d57db11478f60b3a11ca3bc0
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -3, y: -115}
+        - {x: -24, y: -103}
+        - {x: -20, y: -79}
+        - {x: -4, y: -46}
+        - {x: 20, y: -80}
+        - {x: 24, y: -100}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6730548a203e27c48ba5586741637bf3
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_5
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -5, y: -117}
+        - {x: -24, y: -105}
+        - {x: -26, y: -59}
+        - {x: -5, y: -31}
+        - {x: 24, y: -58}
+        - {x: 27, y: -106}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32aa9c166eb51864d85e1e830a6df84b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_6
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 512
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 2, y: -113}
+        - {x: -35, y: -103}
+        - {x: -36, y: -50}
+        - {x: -10, y: -10}
+        - {x: 33, y: -45}
+        - {x: 33, y: -105}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7423720802bc7f64080a8f2c59e52c92
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_7
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 512
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 0, y: -119}
+        - {x: -42, y: -106}
+        - {x: -49, y: -36}
+        - {x: -1, y: -1}
+        - {x: 40, y: -38}
+        - {x: 41, y: -112}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d62e4904d870c81449d02c9eeb93a53a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 1, y: -122}
+        - {x: -44, y: -112}
+        - {x: -60, y: -24}
+        - {x: 1, y: 16}
+        - {x: 48, y: -27}
+        - {x: 50, y: -113}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f0e4580c6b5f9149bce3ce16b2f9c19
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_9
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 0, y: -125}
+        - {x: -38, y: -120}
+        - {x: -56, y: -97}
+        - {x: -47, y: -71}
+        - {x: -56, y: -17}
+        - {x: -6, y: 35}
+        - {x: 57, y: -6}
+        - {x: 48, y: -71}
+        - {x: 58, y: -103}
+        - {x: 44, y: -122}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4b62c1e3516d0240b2ff93571b73414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_10
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 3.718048, y: -127}
+        - {x: -61, y: -121}
+        - {x: -59, y: -83}
+        - {x: -44, y: -79}
+        - {x: -44, y: -51}
+        - {x: -55, y: -31}
+        - {x: -28, y: 31}
+        - {x: 1, y: 56}
+        - {x: 21, y: 23}
+        - {x: 52, y: 16}
+        - {x: 58, y: -51}
+        - {x: 46, y: -61}
+        - {x: 45, y: -81}
+        - {x: 61, y: -86}
+        - {x: 62, y: -122}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ef5522b76b1adb4abff7d0310985238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_11
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 4, y: -128}
+        - {x: -64, y: -117}
+        - {x: -63.664703, y: -83.97333}
+        - {x: -47, y: -78}
+        - {x: -54, y: -39}
+        - {x: -48, y: -21}
+        - {x: -59, y: 18}
+        - {x: -34, y: 36}
+        - {x: 2, y: 79}
+        - {x: 27, y: 40}
+        - {x: 52, y: 4}
+        - {x: 41, y: -27}
+        - {x: 55, y: -51}
+        - {x: 49, y: -79}
+        - {x: 64, y: -88}
+        - {x: 60, y: -119}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b082c8c5eb7c3149acbced6f4328f3c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_12
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 0
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -1, y: -128}
+        - {x: -60, y: -122}
+        - {x: -60, y: -73.28308}
+        - {x: -51, y: -65}
+        - {x: -47, y: -16}
+        - {x: -39, y: 51}
+        - {x: 9, y: 94}
+        - {x: 22, y: 76}
+        - {x: 23, y: 39}
+        - {x: 41, y: -10}
+        - {x: 58, y: -50}
+        - {x: 62, y: -122}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3567cead13e0a574e9a3b50af159baea
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_13
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -1, y: -105}
+        - {x: -56, y: -99}
+        - {x: -56, y: -7.989258}
+        - {x: -41, y: 74}
+        - {x: 5, y: 101}
+        - {x: 28, y: 70}
+        - {x: 57, y: -41}
+        - {x: 49, y: -98}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d933a0b4f7a1a1e44b6ec3904e5c49de
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_14
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 0, y: -113}
+        - {x: -58, y: -105}
+        - {x: -58, y: 2.1635742}
+        - {x: -24, y: 88}
+        - {x: 5.068054, y: 123.000015}
+        - {x: 41, y: 50}
+        - {x: 62, y: -22}
+        - {x: 61, y: -105}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adf6c58b21d525a46809b493b3a5c522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: you_rock_15
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 256
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3d575e245f832547961ef4a33da3219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 21292b1dabdc2e6458217e809bd83904
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
