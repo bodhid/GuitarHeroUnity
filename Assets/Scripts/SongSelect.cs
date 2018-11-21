@@ -5,23 +5,25 @@ using UnityEngine.UI;
 using System.IO;
 public class SongSelect : MonoBehaviour
 {
-	public string path;
 	public Session session;
-	public List<SongInfo> songs;
+	public List<SongScanning.SongInfo> songs;
 	public SongBlock songblockPrefab;
 	public GameObject selectScreen;
 	public RawImage fade;
-	[System.Serializable]
-	public class SongInfo
+	public void Awake()
 	{
-		public FileInfo fileInfo;
-		public string artist, name, displayArtist, displayName;
-	}
+		songs = SongScanning.allSongs;
+		if (songs == null)
+		{
+			UnityEngine.SceneManagement.SceneManager.LoadScene(0, UnityEngine.SceneManagement.LoadSceneMode.Single);
+			return;
+		}
 
-	public void Start()
-	{
+		fade.color = new Color(0, 0, 0, 1);
+		StartCoroutine(FadeOutStart());
+
+		
 		selectScreen.SetActive(true);
-		songs = ScanForSongsRecursively(new DirectoryInfo(Application.dataPath).Parent);
 		for (int i = 0; i < songs.Count; ++i)
 		{
 			SongBlock newBlock = Instantiate(songblockPrefab.gameObject).GetComponent<SongBlock>();
@@ -42,33 +44,14 @@ public class SongSelect : MonoBehaviour
 		}
 	}
 
-	public List<SongInfo> ScanForSongsRecursively(DirectoryInfo folder)
+	private IEnumerator FadeOutStart()
 	{
-		List<SongInfo> list = new List<SongInfo>();
-		List<DirectoryInfo> foldersToScan = new List<DirectoryInfo>();
-		foldersToScan.Add(folder);
-		while (foldersToScan.Count > 0)
+		while (fade.color.a > 0)
 		{
-			DirectoryInfo[] currentScan = foldersToScan.ToArray();
-			foldersToScan.Clear();
-			for (int i = 0; i < currentScan.Length; ++i)
-			{
-				//Debug.Log("Scanning " + currentScan[i].FullName);
-				foreach (FileInfo f in currentScan[i].GetFiles())
-				{
-					if (f.Name == "song.ini")
-					{
-						list.Add(CreateSongInfo(currentScan[i]));
-						break;
-					}
-				}
-				foreach (DirectoryInfo d in currentScan[i].GetDirectories())
-				{
-					foldersToScan.Add(d);
-				}
-			}
+			yield return null;
+			fade.color -= new Color(0, 0, 0, Time.deltaTime);
 		}
-		return Sort(list);
+		fade.gameObject.SetActive(false);
 	}
 
 	private void Update()
@@ -82,58 +65,6 @@ public class SongSelect : MonoBehaviour
 			
 			}
 		}
-	}
-
-	public List<SongInfo> Sort(List<SongInfo> songs)
-	{
-		Dictionary<string, SongInfo> songByArtists = new Dictionary<string, SongInfo>();
-		List<string> artists = new List<string>();
-		for (int i = 0; i < songs.Count; ++i)
-		{
-			if (!songByArtists.ContainsKey(songs[i].displayArtist))
-			{
-				artists.Add(songs[i].displayArtist);
-				songByArtists.Add(songs[i].displayArtist, songs[i]);
-			}
-		}
-		artists.Sort();
-		List<SongInfo> sortedList = new List<SongInfo>();
-		for (int i = 0; i < artists.Count; ++i)
-		{
-			sortedList.Add(songByArtists[artists[i]]);
-		}
-		return sortedList;
-	}
-
-	public SongInfo CreateSongInfo(DirectoryInfo folder)
-	{
-		SongInfo songInfo = new SongInfo();
-		foreach (FileInfo f in folder.GetFiles())
-		{
-			if (f.Name == "notes.chart")
-			{
-				songInfo.fileInfo = f;
-				break;
-			}
-		}
-		FileInfo ini = null;
-		foreach (FileInfo f in folder.GetFiles())
-		{
-			if (f.Name == "song.ini")
-			{
-				ini = f;
-				break;
-			}
-		}
-		string[] lines = File.ReadAllLines(ini.FullName);
-		for (int i = 0; i < lines.Length; ++i)
-		{
-			if (lines[i].StartsWith("name")) songInfo.name = lines[i].Split("="[0])[1].Trim();
-			if (lines[i].StartsWith("artist")) songInfo.artist = lines[i].Split("="[0])[1].Trim();
-		}
-		songInfo.displayArtist = songInfo.artist + " - " + songInfo.name;
-		songInfo.displayName = songInfo.name + " - " + songInfo.artist;
-		return songInfo;
 	}
 
 	public void LoadSong(FileInfo chartFile)
@@ -164,12 +95,8 @@ public class SongSelect : MonoBehaviour
 		 });
 
 		while (!prepared) yield return null;
-		Debug.Log("Initializing session");
-		yield return null;
 		session.Initialize(song);
-
 		selectScreen.SetActive(false);
-		yield return null;
 		Debug.Log("Ready to play");
 		while (fade.color.a > 0)
 		{
