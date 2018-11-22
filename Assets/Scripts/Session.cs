@@ -5,34 +5,19 @@ using UnityEngine;
 public class Session : MonoBehaviour
 {
 	public Song song;
-	public Transform camera3DTransform;
+	public Player playerPrefab;
+	public Player[] players;
+	public SessionRenderer sessionRenderer;
 	public Smoothing smoothing;
 	public NoteRenderer noteRenderer;
 	public bool playing = false;
 	public float speed; //meter per second
 	public GameObject[] prefabs;
 	public GameObject[] barPrefabs;
-	public Animation2D[] flame;
-	public NoteModel[][] pool;
-	public BarInstance[] barPool;
-	public int[] poolIndex;
 	public int frameIndex = 0;
-	public int noteIndex = 0;
 	public int syncIndex = 0;
-	public int barPoolIndex = 0;
-	public int noteinstancePoolIndex = 0;
-	public int poolSize = 256;
-	public int noteInstancePoolSize = 1024;
-	public int barPoolSize = 64;
-	public int noteResolution;
-	public uint nextBar = 0;
 	public float boardLength = 10; //meters
-	public NoteInstance[] noteInstancePool;
-	public List<NoteInstance> activeNotes;
-	public List<NoteInstance> willRemove;
-	public List<BarInstance> activeBars;
-	public List<BarInstance> willRemoveBars;
-	private List<Song.Note> allNotes;
+	//public NoteInstance[] noteInstancePool;
 	private AudioSource guitarSource, rhythmSource, songSource;
 	public float time, previousTime;
 	public double tick = 0;
@@ -42,42 +27,15 @@ public class Session : MonoBehaviour
 	public float RenderingFadeDistance = 3;
 	public float RenderingFadeAmount = 1;
 
-	[System.Serializable]
-	public class NoteInstance
+	public class PlayerInfo
 	{
-		public void Update(NoteModel _noteModel, uint _timestamp, uint _fred, uint _duration, bool _star, bool _hammeron)
-		{
-			noteModel = _noteModel;
-			timestamp = _timestamp;
-			fred = _fred;
-			duration = _duration;
-			star = _star;
-			hammeron = _hammeron;
-		}
-		public NoteModel noteModel;
-		public uint timestamp;
-		public bool seen, star, hammeron;
-		public uint fred;
-		public uint duration;
+		public Song.Difficulty difficulty;
 	}
 
-	public enum Difficulty
-	{
-		Easy,
-		Medium,
-		Hard,
-		Expert
-	}
-
-	public void Initialize(Song _song, Difficulty difficulty = Difficulty.Expert)
+	public void Initialize(Song _song, PlayerInfo[] _playerInfos)
 	{
 		Debug.Log("initializing ");
-		
 		song = _song;
-		
-		//noteRenderer.Initialize();
-		activeNotes = new List<NoteInstance>();
-		willRemove = new List<NoteInstance>();
 		guitarSource = gameObject.AddComponent<AudioSource>();
 		rhythmSource = gameObject.AddComponent<AudioSource>();
 		songSource = gameObject.AddComponent<AudioSource>();
@@ -88,48 +46,59 @@ public class Session : MonoBehaviour
 		Shader.SetGlobalFloat("_GH_Distance", RenderingFadeDistance);
 		Shader.SetGlobalFloat("_GH_Fade", RenderingFadeAmount);
 		smoothing = new Smoothing();
-		switch (difficulty)
+		List<RenderTexture> outputs = new List<RenderTexture>();
+
+		players = new Player[_playerInfos.Length];
+		for (int i = 0; i < _playerInfos.Length; ++i)
 		{
-			case Difficulty.Easy:
-				allNotes = song.data.notes.easy;
-				break;
-			case Difficulty.Medium:
-				allNotes = song.data.notes.medium;
-				break;
-			case Difficulty.Hard:
-				allNotes = song.data.notes.hard;
-				break;
-			case Difficulty.Expert:
-				allNotes = song.data.notes.expert;
-				break;
+			players[i] = Instantiate(playerPrefab.gameObject).GetComponent<Player>();
+			players[i].transform.SetParent(transform);
+			players[i].gameObject.SetActive(true);
 		}
 
-		noteInstancePool = new NoteInstance[noteInstancePoolSize];
-		for (int i = 0; i < noteInstancePoolSize; ++i)
+		for (int i = 0; i < players.Length; ++i)
 		{
-			noteInstancePool[i] = new NoteInstance();
-		}
-		if (pool == null)
-		{
-			pool = new NoteModel[prefabs.Length][];
-			for (int i = 0; i < prefabs.Length; ++i)
+			Player.Pool pool = new Player.Pool();
+			pool.barSize = 64;
+			pool.noteInstanceSize = 1024;
+			pool.noteSize = 256;
+			Player.PoolIndex poolIndex = new Player.PoolIndex();
+
+			pool.noteInstance = new Player.NoteInstance[pool.noteInstanceSize];
+			for (int j = 0; j < pool.noteInstanceSize; ++j)
 			{
-				pool[i] = MakePool(poolSize, prefabs[i]);
+				pool.noteInstance[j] = new Player.NoteInstance();
 			}
-			poolIndex = new int[prefabs.Length];
+
+			pool.note = new NoteModel[prefabs.Length][];
+			for (int j = 0; j < prefabs.Length; ++j)
+			{
+				pool.note[j] = players[i].MakePool(pool.noteSize, prefabs[j]);
+			}
+
+			pool.bar = new BarInstance[pool.barSize];
+			poolIndex.bar = poolIndex.note = poolIndex.noteInstance = 0;
+			poolIndex.noteModel = new int[prefabs.Length];
+
+			GameObject barPoolParent = new GameObject("BarPool");
+			barPoolParent.transform.SetParent(players[i].transform);
+			for (int j = 0; j < pool.barSize; ++j)
+			{
+				//Debug.Log(j + " - "+ pool.bar.Length);
+				pool.bar[j] = Instantiate(barPrefabs[j % 2]).GetComponent<BarInstance>();
+				pool.bar[j].transform.SetParent(barPoolParent.transform);
+				pool.bar[j].gameObject.SetActive(false);
+			}
+
+			players[i].activeNotes = new List<Player.NoteInstance>();
+			players[i].willRemove = new List<Player.NoteInstance>();
+			players[i].activeBars = new List<BarInstance>();
+			players[i].willRemoveBars = new List<BarInstance>();
+
+			RenderTexture output = players[i].Initialize(i,song,_playerInfos[i].difficulty, new Vector2(1024,1024),pool, poolIndex, song.data.info.resolution, speed);
+			outputs.Add(output);
 		}
-		barPool = new BarInstance[barPoolSize];
-		GameObject barPoolParent = new GameObject("BarPool");
-		barPoolParent.transform.SetParent(transform);
-		activeBars = new List<BarInstance>();
-		willRemoveBars = new List<BarInstance>();
-		nextBar = song.data.info.resolution;
-		for (int i = 0; i < barPoolSize; ++i)
-		{
-			barPool[i] = Instantiate(barPrefabs[i % 2]).GetComponent<BarInstance>();
-			barPool[i].transform.SetParent(barPoolParent.transform);
-			barPool[i].gameObject.SetActive(false);
-		}
+		sessionRenderer.Initialize(outputs.ToArray());
 		System.GC.Collect();
 		//GcControl.GC_disable();
 
@@ -140,32 +109,15 @@ public class Session : MonoBehaviour
 		song = null;
 		smoothing = null;
 		playing = false;
-		for (int i = 0; i < pool.Length; ++i)
-		{
-			for (int j = 0; j < pool[i].Length; ++j)
-			{
-				Destroy(pool[i][j].gameObject);
-			}
-		}
 		foreach (Transform child in transform)
 		{
 			if (child.name.ToLower().Contains("pool"))
 			{
 				Destroy(child.gameObject);
 			}
-			}
-		pool = null;
-		barPool = null;
-		poolIndex = null;
+		}
 		frameIndex = 0;
-		noteIndex = 0;
-		syncIndex = 0;
-		barPoolIndex = 0;
-		noteinstancePoolIndex = 0;
-		noteInstancePool = null;
-		activeNotes = null;
-		willRemove = null;
-		allNotes = null;
+		//noteInstancePool = null;
 		Destroy(guitarSource.clip);
 		Destroy(rhythmSource.clip);
 		Destroy(songSource.clip);
@@ -178,35 +130,24 @@ public class Session : MonoBehaviour
 		smoothTick = 0;
 		starPowerDuration = 0;
 		bpm = smoothBpm = 0;
-		camera3DTransform.gameObject.SetActive(false);
+		syncIndex = 0;
+		for (int i = 0; i < players.Length; ++i)
+		{
+			players[i].Dispose();
+		}
 		System.GC.Collect();
 	}
 
 	public void StartPlaying()
 	{
-		camera3DTransform.gameObject.SetActive(true);
+		for (int i = 0; i < players.Length; ++i)
+		{
+			players[i].cam.gameObject.SetActive(true);
+		}
 		playing = true;
 	}
 
-	private NoteModel[] MakePool(int size, GameObject prefab)
-	{
-		NoteModel[] newPool = new NoteModel[size];
-		GameObject poolObject = new GameObject("Pool " + prefab.name);
-		poolObject.transform.SetParent(transform);
-		for (int i = 0; i < newPool.Length; ++i)
-		{
-
-			GameObject g = Instantiate(prefab);
-			g.SetActive(false);
-			g.transform.SetParent(poolObject.transform);
-			newPool[i] = g.GetComponent<NoteModel>();
-			if (newPool[i].line != null)
-			{
-				newPool[i].materialInstance = newPool[i].line.material;
-			}
-		}
-		return newPool;
-	}
+	
 	void Update()
 	{
 		if (guitarSource != null && guitarSource.isPlaying)
@@ -219,13 +160,18 @@ public class Session : MonoBehaviour
 			songSource.time = guitarSource.time;
 
 			Sync(millisecondsPassed);
-			//Debug.Log("going ");
 			smoothBpm = smoothing.SmoothBPM(bpm);
 			smoothTick = smoothing.SmoothTick(tick, song.data.info.resolution);
-			CreateNote();
-			UpdateActiveNotes();
-			CreateBar();
-			UpdateActiveBars();
+			//Debug.Log(tick + " - " + smoothTick);
+			for (int i = 0; i < players.Length; ++i)
+			{
+				players[i].SpawnObjects(tick, beatsPerSecond);
+				players[i].UpdateObjects(smoothTick, noteRenderer, frameIndex);
+				players[i].CreateBar(tick);
+				players[i].UpdateActiveBars(smoothTick);
+			}
+
+
 			previousTime = time;
 		}
 		else
@@ -283,152 +229,14 @@ public class Session : MonoBehaviour
 		}
 	}
 
-	private void CreateNote()
-	{
-		if (noteIndex >= allNotes.Count) return; //end of song
-		Song.Note nextNote = allNotes[noteIndex];
-
-		//Debug.Log(nextNote.timestamp);
-		double tenSeconds = Time.deltaTime * 10;
-		double tenSecondsInBeats = beatsPerSecond * 3;
-		double tenSecondsInTicks = tenSecondsInBeats * song.data.info.resolution;
-
-		if (nextNote.timestamp < tick + MetersToTickDistance(4f)) //spawn tick + 10 seconds?
-		{
-			//Debug.Log("New Note");
-			try
-			{
-				bool longNote = (nextNote.duration > 0);
-				int poolNumber = (int)nextNote.fred + (longNote ? 5 : 0);
-				NoteModel noteModel = pool[poolNumber][poolIndex[poolNumber] % poolSize];
-				GameObject newNote = noteModel.gameObject;
-				noteModel.myTransform.rotation = camera3DTransform.rotation;
-				newNote.SetActive(true);
-				NoteInstance noteInstance = noteInstancePool[noteinstancePoolIndex % noteInstancePoolSize];
-				noteinstancePoolIndex++;
-				noteInstance.Update(noteModel, nextNote.timestamp, nextNote.fred, nextNote.duration, nextNote.star, nextNote.hammerOn);
-				noteInstance.seen = false;
-				activeNotes.Add(noteInstance);
-
-				
-
-				noteIndex++;
-				poolIndex[poolNumber]++;
-				CreateNote();
-			}
-			catch (System.Exception e)
-			{
-				Debug.LogError(e.Message + " - " + e.StackTrace);
-				Debug.LogError(nextNote.fred);
-				Debug.LogError(poolIndex[nextNote.fred] % poolSize);
-			}
-		}
-	}
-	private void UpdateActiveNotes()
-	{
-		for (int i = 0; i < activeNotes.Count; ++i)
-		{
-			NoteInstance noteInstance = activeNotes[i];
-			Transform noteTransform = noteInstance.noteModel.transform;
-			Vector3 pos = noteTransform.localPosition;
-
-			float tickDistance = noteInstance.timestamp - (float)smoothTick;
-			float distanceInMeters = TickDistanceToMeters(tickDistance);
-			pos.z = distanceInMeters;
-			noteTransform.position = pos;
-			float noteDistance = tickDistance;
-			float noteDistanceInMeters = TickDistanceToMeters(noteDistance);
-			float endOfNoteDistance = tickDistance + noteInstance.duration;
-			float endOfNoteInMeters = TickDistanceToMeters(endOfNoteDistance);
-			if (noteInstance.duration > 0)
-			{
-				//update long note length
-				float length= endOfNoteInMeters - distanceInMeters;
-				noteInstance.noteModel.SetLengt(length);
-			}
-
-			//show correct sprite
-			SpriteRenderer spriteRenderer = noteInstance.noteModel.spriteRenderer;
-			NoteRenderer.FredSpriteData fredSpriteData = noteRenderer.spriteData.fred[noteInstance.fred];
-			if (noteInstance.star)
-			{
-				spriteRenderer.sprite = (noteInstance.hammeron) ? fredSpriteData.starHammerOn[frameIndex % 16] : fredSpriteData.star[frameIndex % 16];
-			}
-			else
-			{
-				spriteRenderer.sprite = (noteInstance.hammeron) ? fredSpriteData.hammerOn : fredSpriteData.normal;
-			}
-
-			if (noteDistance < 0)
-			{
-				flame[noteInstance.fred].gameObject.SetActive(true);
-				flame[noteInstance.fred].Reset();
-				flame[noteInstance.fred].seconds = (1f / 60f * 8f);
-			}
-
-			if (endOfNoteInMeters < 0) //out of view
-			{
-				willRemove.Add(noteInstance);
-			}
-			//noteRenderer.RenderNote(noteInstance, distanceInMeters);
-		}
-
-		for (int i = willRemove.Count - 1; i > -1; --i)
-		{
-			activeNotes.Remove(willRemove[i]);
-			willRemove[i].noteModel.transform.gameObject.SetActive(false);
-			
-			//noteRenderer.RemoveMap(willRemove[i]);
-			willRemove.RemoveAt(i);
-		}
-	}
-
-	private void CreateBar()
-	{
-		if (nextBar < tick + MetersToTickDistance(4f)) //spawn tick + 10 seconds?
-		{
-			
-			BarInstance newBar = barPool[barPoolIndex%barPoolSize];
-			barPoolIndex++;
-			newBar.gameObject.SetActive(true);
-			newBar.timestamp = nextBar;
-			activeBars.Add(newBar);
-			nextBar += song.data.info.resolution;
-		}
-	}
-
-	private void UpdateActiveBars()
-	{
-		for (int i = 0; i < activeBars.Count; ++i)
-		{
-			BarInstance barInstance = activeBars[i];
-			float tickDistance = barInstance.timestamp - (float)smoothTick;
-			float distanceInMeters = TickDistanceToMeters(tickDistance);
-			Vector3 pos = barInstance.myTransform.localPosition;
-			pos.z = distanceInMeters;
-			barInstance.myTransform.position = pos;
-			if (tickDistance < 0)
-			{
-			//	Debug.Log("Will Remove " + barInstance.gameObject);
-				willRemoveBars.Add(barInstance);
-			}
-		}
-		for (int i = willRemoveBars.Count - 1; i > -1; --i)
-		{
-			activeBars.Remove(willRemoveBars[i]);
-			willRemoveBars[i].gameObject.SetActive(false);
-			willRemoveBars.RemoveAt(i);
-		}
-	}
-
 	public float TickDistanceToMeters(float tickDistance)
 	{
 		if (song == null) return 0;
-		return (tickDistance / song.data.info.resolution)*speed;
+		return (tickDistance / song.data.info.resolution) * speed;
 	}
 	public float MetersToTickDistance(float meters)
 	{
 		if (song == null) return 0;
-		return (meters/speed * song.data.info.resolution);
+		return (meters / speed * song.data.info.resolution);
 	}
 }

@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+	public int playerNumber;
+	public int layerMask;
+	public Song.Difficulty difficulty;
 	public RenderTexture output;
+	public Song song;
 	public List<Song.Note> notes;
 	public Transform cam;
 	public Board board;
@@ -17,6 +21,7 @@ public class Player : MonoBehaviour
 	public Animation2D[] flame;
 	public uint resolution;
 	public float speed;
+	public uint nextBar;
 
 	[System.Serializable]
 	public class Pool
@@ -57,21 +62,74 @@ public class Player : MonoBehaviour
 		public uint duration;
 	}
 
-	public void Initialize(List<Song.Note> _notes, Pool _pool, PoolIndex _poolIndex, uint _resolution, float _speed)
+	public RenderTexture Initialize(int _playerNumber,Song _song, Song.Difficulty _difficulty,Vector2 _output, Pool _pool, PoolIndex _poolIndex, uint _resolution, float _speed)
 	{
-		notes = _notes;
+		playerNumber = _playerNumber;
+		layerMask= 1 << (10 + playerNumber);
+		song = _song;
+		switch (_difficulty)
+		{
+			case Song.Difficulty.Easy:
+				notes = song.data.notes.easy;
+				break;
+			case Song.Difficulty.Medium:
+				notes = song.data.notes.medium;
+				break;
+			case Song.Difficulty.Hard:
+				notes = song.data.notes.hard;
+				break;
+			case Song.Difficulty.Expert:
+				notes = song.data.notes.expert;
+				break;
+		}
 		pool = _pool;
 		index = new PoolIndex();
 		resolution = _resolution;
+		nextBar = resolution;
 		speed = _speed;
 		index = _poolIndex;
 		activeNotes = new List<NoteInstance>();
 		activeBars = new List<BarInstance>();
 		willRemove = new List<NoteInstance>();
 		willRemoveBars = new List<BarInstance>();
+
+		output = new RenderTexture(Mathf.CeilToInt(_output.x), Mathf.CeilToInt(_output.y), 16, RenderTextureFormat.ARGB32);
+		cam.GetComponent<Camera>().targetTexture = output;
+		cam.GetComponent<Camera>().cullingMask = layerMask;
+		SetLayerRecursive(transform,10+ playerNumber);
+
+		return output;
 	}
 
+	public void SetLayerRecursive(Transform t, int layerMask)
+	{
+		foreach (Transform child in t)
+		{
+			//Debug.Log(child.name);
+			child.gameObject.layer = layerMask;
+			SetLayerRecursive(child, layerMask);
+		}
+		}
 
+	public NoteModel[] MakePool(int size, GameObject prefab)
+	{
+		NoteModel[] newPool = new NoteModel[size];
+		GameObject poolObject = new GameObject("Pool " + prefab.name);
+		poolObject.transform.SetParent(transform);
+		for (int i = 0; i < newPool.Length; ++i)
+		{
+
+			GameObject g = Instantiate(prefab);
+			g.SetActive(false);
+			g.transform.SetParent(poolObject.transform);
+			newPool[i] = g.GetComponent<NoteModel>();
+			if (newPool[i].line != null)
+			{
+				newPool[i].materialInstance = newPool[i].line.material;
+			}
+		}
+		return newPool;
+	}
 
 	public void SpawnObjects(double tick, double beatsPerSecond)
 	{
@@ -109,8 +167,26 @@ public class Player : MonoBehaviour
 			}
 		}
 	}
-	private void UpdateObjects(double smoothTick, NoteRenderer noteRenderer, int frameIndex)
+
+	public void Dispose()
 	{
+		song = null;
+		foreach (Transform child in transform)
+		{
+			if (child.name.ToLower().Contains("pool"))
+			{
+				Destroy(child.gameObject);
+			}
+		}
+		cam.gameObject.SetActive(false);
+		pool = null;
+		index = null;
+		Destroy(gameObject);
+	}
+
+	public void UpdateObjects(double smoothTick, NoteRenderer noteRenderer, int frameIndex)
+	{
+		//Debug.Log("Updating " + gameObject.name+ " - "+smoothTick);
 		for (int i = 0; i < activeNotes.Count; ++i)
 		{
 			NoteInstance noteInstance = activeNotes[i];
@@ -120,7 +196,7 @@ public class Player : MonoBehaviour
 			double tickDistance = noteInstance.timestamp - smoothTick;
 			double distanceInMeters = TickDistanceToMeters(tickDistance);
 			pos.z = (float)distanceInMeters;
-			noteTransform.position = pos;
+			noteTransform.localPosition = pos;
 			double noteDistance = tickDistance;
 			double noteDistanceInMeters = TickDistanceToMeters(noteDistance);
 			double endOfNoteDistance = tickDistance + noteInstance.duration;
@@ -155,7 +231,6 @@ public class Player : MonoBehaviour
 			{
 				willRemove.Add(noteInstance);
 			}
-			//noteRenderer.RenderNote(noteInstance, distanceInMeters);
 		}
 
 		for (int i = willRemove.Count - 1; i > -1; --i)
@@ -165,6 +240,44 @@ public class Player : MonoBehaviour
 
 			//noteRenderer.RemoveMap(willRemove[i]);
 			willRemove.RemoveAt(i);
+		}
+	}
+
+	public void CreateBar(double tick)
+	{
+		if (nextBar < tick + MetersToTickDistance(4f)) //spawn tick + 10 seconds?
+		{
+
+			BarInstance newBar = pool.bar[index.bar % pool.barSize];
+			index.bar++;
+			newBar.gameObject.SetActive(true);
+			newBar.timestamp = nextBar;
+			activeBars.Add(newBar);
+			nextBar += resolution;
+		}
+	}
+
+	public void UpdateActiveBars(double smoothTick)
+	{
+		for (int i = 0; i < activeBars.Count; ++i)
+		{
+			BarInstance barInstance = activeBars[i];
+			double tickDistance = barInstance.timestamp - smoothTick;
+			double distanceInMeters = TickDistanceToMeters(tickDistance);
+			Vector3 pos = barInstance.myTransform.localPosition;
+			pos.z = (float)distanceInMeters;
+			barInstance.myTransform.localPosition = pos;
+			if (tickDistance < 0)
+			{
+				//	Debug.Log("Will Remove " + barInstance.gameObject);
+				willRemoveBars.Add(barInstance);
+			}
+		}
+		for (int i = willRemoveBars.Count - 1; i > -1; --i)
+		{
+			activeBars.Remove(willRemoveBars[i]);
+			willRemoveBars[i].gameObject.SetActive(false);
+			willRemoveBars.RemoveAt(i);
 		}
 	}
 

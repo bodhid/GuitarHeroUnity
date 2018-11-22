@@ -10,6 +10,14 @@ public class Song
 	public Data data;
 	public Audio audio;
 
+	public enum Difficulty
+	{
+		Easy,
+		Medium,
+		Hard,
+		Expert
+	}
+
 	[System.Serializable]
 	public class Data
 	{
