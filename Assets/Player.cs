@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
 	public Song song;
 	public List<Song.Note> notes;
 	public Transform cam;
-	public Board board;
+	public Transform board;
 	public PoolIndex index;
 	public Pool pool;
 	public List<NoteInstance> activeNotes;
@@ -195,7 +195,12 @@ public class Player : MonoBehaviour
 
 	public void UpdateObjects(double smoothTick, NoteRenderer noteRenderer, int frameIndex)
 	{
-		//Debug.Log("Updating " + gameObject.name+ " - "+smoothTick);
+		Vector3 boardPosition = board.localPosition;
+		boardPosition.z = (float)((TickDistanceToMeters(smoothTick) % 2) * -1f + 4);
+		if (!float.IsNaN(boardPosition.z))
+		{
+			board.localPosition = boardPosition;
+		}
 		for (int i = 0; i < activeNotes.Count; ++i)
 		{
 			NoteInstance noteInstance = activeNotes[i];
@@ -228,29 +233,14 @@ public class Player : MonoBehaviour
 			{
 				spriteRenderer.sprite = (noteInstance.hammeron) ? fredSpriteData.hammerOn : fredSpriteData.normal;
 			}
-
-			if (noteDistance < 0)
-			{
-				//flame[noteInstance.fred].gameObject.SetActive(true);
-				//flame[noteInstance.fred].Reset();
-				//flame[noteInstance.fred].seconds = (1f / 60f * 8f);
-			}
-
 			if (endOfNoteInMeters < -1) //out of view
 			{
 				willRemove.Add(noteInstance);
 			}
 		}
-
-		for (int i = willRemove.Count - 1; i > -1; --i)
-		{
-			activeNotes.Remove(willRemove[i]);
-			willRemove[i].noteModel.transform.gameObject.SetActive(false);
-
-			//noteRenderer.RemoveMap(willRemove[i]);
-			willRemove.RemoveAt(i);
-		}
 	}
+
+	
 
 	public void CreateBar(double tick)
 	{
@@ -278,7 +268,6 @@ public class Player : MonoBehaviour
 			barInstance.myTransform.localPosition = pos;
 			if (tickDistance < 0)
 			{
-				//	Debug.Log("Will Remove " + barInstance.gameObject);
 				willRemoveBars.Add(barInstance);
 			}
 		}
@@ -295,6 +284,34 @@ public class Player : MonoBehaviour
 		for (int i = 0; i < playerInput.fred.Length; ++i)
 		{
 			fredHighlight[i].SetActive(playerInput.fred[i]);
+		}
+		for (int i = 0; i < activeNotes.Count; ++i)
+		{
+			NoteInstance noteInstance = activeNotes[i];
+			if (playerInput.strumPressed)
+			{
+				if (playerInput.fred[noteInstance.fred])
+				{
+					float distance = Mathf.Abs((float)(tick - noteInstance.timestamp));
+					if (distance < resolution/4)
+					{
+						flame[noteInstance.fred].gameObject.SetActive(true);
+						flame[noteInstance.fred].Reset();
+						flame[noteInstance.fred].seconds = (1f / 60f * 8f);
+						willRemove.Add(noteInstance);
+					}
+				}
+			}
+		}
+	}
+
+	public void DiscardNotes()
+	{
+		for (int i = willRemove.Count - 1; i > -1; --i)
+		{
+			activeNotes.Remove(willRemove[i]);
+			willRemove[i].noteModel.transform.gameObject.SetActive(false);
+			willRemove.RemoveAt(i);
 		}
 	}
 

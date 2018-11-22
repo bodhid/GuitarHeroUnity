@@ -20,6 +20,7 @@ public class Session : MonoBehaviour
 	//public NoteInstance[] noteInstancePool;
 	private AudioSource guitarSource, rhythmSource, songSource;
 	public float time, previousTime;
+	public double visualOffset;
 	public double tick = 0;
 	public double smoothTick = 0;
 	public double starPowerDuration = 0;
@@ -45,7 +46,7 @@ public class Session : MonoBehaviour
 		songSource.clip = song.audio.song;
 		Shader.SetGlobalFloat("_GH_Distance", RenderingFadeDistance);
 		Shader.SetGlobalFloat("_GH_Fade", RenderingFadeAmount);
-		smoothing = new Smoothing();
+		smoothing = new Smoothing(visualOffset);
 		List<RenderTexture> outputs = new List<RenderTexture>();
 
 		players = new Player[_playerInfos.Length];
@@ -172,7 +173,8 @@ public class Session : MonoBehaviour
 				players[i].UpdateObjects(smoothTick, noteRenderer, frameIndex);
 				players[i].CreateBar(tick);
 				players[i].UpdateActiveBars(smoothTick);
-				players[i].RegisterHits();
+				players[i].RegisterHits(tick);
+				players[i].DiscardNotes();
 			}
 
 			previousTime = time;

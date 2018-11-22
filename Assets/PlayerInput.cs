@@ -24,7 +24,7 @@ public class PlayerInput
 		fred[0] = XInput.GetButton(deviceId, XInput.Button.A);
 		fred[1] = XInput.GetButton(deviceId, XInput.Button.B);
 		fred[2] = XInput.GetButton(deviceId, XInput.Button.Y);
-		fred[3] = XInput.GetButton(deviceId, XInput.Button.LB);
+		fred[3] = XInput.GetButton(deviceId, XInput.Button.X);
 		fred[4] = XInput.GetButton(deviceId, XInput.Button.LB);
 
 		startPressed = XInput.GetButtonDown(deviceId, XInput.Button.Start);

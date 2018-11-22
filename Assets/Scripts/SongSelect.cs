@@ -95,11 +95,11 @@ public class SongSelect : MonoBehaviour
 		 });
 
 		while (!prepared) yield return null;
-		Session.PlayerInfo[] players = new Session.PlayerInfo[2];
+		Session.PlayerInfo[] players = new Session.PlayerInfo[1];
 		players[0] = new Session.PlayerInfo();
-		players[0].difficulty = Song.Difficulty.Easy;
-		players[1] = new Session.PlayerInfo();
-		players[1].difficulty = Song.Difficulty.Expert;
+		players[0].difficulty = Song.Difficulty.Hard;
+		//players[1] = new Session.PlayerInfo();
+		//players[1].difficulty = Song.Difficulty.Expert;
 		session.Initialize(song,players);
 		selectScreen.SetActive(false);
 		Debug.Log("Ready to play");

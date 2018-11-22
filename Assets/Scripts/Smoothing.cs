@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class Smoothing
 {
+	private double visualOffset=0;
 	private double smoothBpm = 0;
 	private double smoothTick = 0;
+	public Smoothing(double _visualOffset)
+	{
+		visualOffset = _visualOffset;
+	}
 	public double SmoothBPM(double bpm)
 	{
 		if (smoothBpm == 0)
@@ -28,6 +33,10 @@ public class Smoothing
 
 		smoothTick= (smoothTick * 0.9d) + (tick * 0.1d);
 
-		return smoothTick;
+		double offsetSeconds = visualOffset * 0.001d;
+		double offsetBeats = beatsPerSecond * offsetSeconds;
+		double offsetTicks = offsetBeats * resolution;
+
+		return smoothTick + offsetTicks;
 	}
 }
