@@ -152,7 +152,11 @@ public class Session : MonoBehaviour
 	{
 		if (guitarSource != null && guitarSource.isPlaying)
 		{
-			//noteRenderer.NewFrame();
+			//first get input for this frame
+			for (int i = 0; i < players.Length; ++i)
+			{
+				players[i].GetInput();
+			}
 			frameIndex++;
 			time = (guitarSource.time * 1000f);
 			float millisecondsPassed = time - previousTime;
@@ -162,15 +166,14 @@ public class Session : MonoBehaviour
 			Sync(millisecondsPassed);
 			smoothBpm = smoothing.SmoothBPM(bpm);
 			smoothTick = smoothing.SmoothTick(tick, song.data.info.resolution);
-			//Debug.Log(tick + " - " + smoothTick);
 			for (int i = 0; i < players.Length; ++i)
 			{
 				players[i].SpawnObjects(tick, beatsPerSecond);
 				players[i].UpdateObjects(smoothTick, noteRenderer, frameIndex);
 				players[i].CreateBar(tick);
 				players[i].UpdateActiveBars(smoothTick);
+				players[i].RegisterHits();
 			}
-
 
 			previousTime = time;
 		}
@@ -189,42 +192,26 @@ public class Session : MonoBehaviour
 
 	private void Sync(float millisecondsPassed)
 	{
-		if (millisecondsPassed == 0)
-		{
-			//Debug.LogWarning("NO AUDIO PLAYED!");
-		}
-
-		//Debug.Log("milliseconds passed " + millisecondsPassed);
 		beatsPerSecond = bpm / 60d;
-		//Debug.Log("bps " + beatsPerSecond);
 		secondsPassed = millisecondsPassed / 1000d;
-		//Debug.Log("seconds passed " + secondsPassed);
 		beatsPassed = beatsPerSecond * secondsPassed;
-		//Debug.Log("beats passed " + beatsPassed);
 		ticksPassed = beatsPassed * song.data.info.resolution;
-		//Debug.Log("Ticks passed " + ticksPassed);
 		if (!double.IsNaN(ticksPassed) && bpm > 0) tick += ticksPassed;
-
-
-		//Debug.Log("TICK: " + tick);
 		if (syncIndex < song.data.syncTrack.Count) //check if on final sync
 		{
 			Song.SyncTrack nextSync = song.data.syncTrack[syncIndex];
 			if (nextSync.timestamp <= tick)
 			{
-				//Debug.Log("Executing command " + nextSync.command + " " + nextSync.value);
 				switch (nextSync.command)
 				{
 					case "B":
 						bpm = nextSync.value * 0.001d;
-						//Debug.Log("Settings BPM to " + bpm);
 						break;
 					case "TS":
 						//???????
 						break;
 				}
 				syncIndex++;
-				//Sync(0);
 			}
 		}
 	}

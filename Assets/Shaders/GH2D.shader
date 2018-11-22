@@ -49,7 +49,7 @@
 			{
 				fixed4 col = tex2D(_MainTex, i.uv);
 				//col.rgb = i.worldPos;
-				col.a *= saturate(1-saturate((i.worldPos.z - _GH_Distance)/ _GH_Fade));
+				col.a *= (1-saturate((i.worldPos.z - _GH_Distance)/ _GH_Fade));
 				return col;
 			}
 			ENDCG

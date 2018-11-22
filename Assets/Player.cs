@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 	public int playerNumber;
+	public PlayerInput playerInput;
 	public int layerMask;
 	public Song.Difficulty difficulty;
 	public RenderTexture output;
@@ -19,6 +20,7 @@ public class Player : MonoBehaviour
 	public List<BarInstance> activeBars;
 	public List<BarInstance> willRemoveBars;
 	public Animation2D[] flame;
+	public GameObject[] fredHighlight;
 	public uint resolution;
 	public float speed;
 	public uint nextBar;
@@ -98,7 +100,14 @@ public class Player : MonoBehaviour
 		cam.GetComponent<Camera>().cullingMask = layerMask;
 		SetLayerRecursive(transform,10+ playerNumber);
 
+		playerInput = new PlayerInput(PlayerInput.Device.Xinput, playerNumber);
+
 		return output;
+	}
+
+	public void GetInput()
+	{
+		playerInput.Update();
 	}
 
 	public void SetLayerRecursive(Transform t, int layerMask)
@@ -222,12 +231,12 @@ public class Player : MonoBehaviour
 
 			if (noteDistance < 0)
 			{
-				flame[noteInstance.fred].gameObject.SetActive(true);
-				flame[noteInstance.fred].Reset();
-				flame[noteInstance.fred].seconds = (1f / 60f * 8f);
+				//flame[noteInstance.fred].gameObject.SetActive(true);
+				//flame[noteInstance.fred].Reset();
+				//flame[noteInstance.fred].seconds = (1f / 60f * 8f);
 			}
 
-			if (endOfNoteInMeters < 0) //out of view
+			if (endOfNoteInMeters < -1) //out of view
 			{
 				willRemove.Add(noteInstance);
 			}
@@ -278,6 +287,14 @@ public class Player : MonoBehaviour
 			activeBars.Remove(willRemoveBars[i]);
 			willRemoveBars[i].gameObject.SetActive(false);
 			willRemoveBars.RemoveAt(i);
+		}
+	}
+
+	public void RegisterHits(double tick)
+	{
+		for (int i = 0; i < playerInput.fred.Length; ++i)
+		{
+			fredHighlight[i].SetActive(playerInput.fred[i]);
 		}
 	}
 

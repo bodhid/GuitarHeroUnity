@@ -61,6 +61,11 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ab7939d3d6bbb574a86ab3f67b1aa253, type: 3}
   - {fileID: 21300006, guid: ab7939d3d6bbb574a86ab3f67b1aa253, type: 3}
   - {fileID: 21300004, guid: ab7939d3d6bbb574a86ab3f67b1aa253, type: 3}
+  - {fileID: 21300008, guid: fda4bf78612ae114f822617a9456131a, type: 3}
+  - {fileID: 21300004, guid: fda4bf78612ae114f822617a9456131a, type: 3}
+  - {fileID: 21300006, guid: fda4bf78612ae114f822617a9456131a, type: 3}
+  - {fileID: 21300000, guid: fda4bf78612ae114f822617a9456131a, type: 3}
+  - {fileID: 21300002, guid: fda4bf78612ae114f822617a9456131a, type: 3}
   - {fileID: 21300000, guid: 5f7e74aab6dcb2f42bff5f3ac71f30e3, type: 3}
   - {fileID: 21300000, guid: 5c5cdcfd15c23e64a8a19f8b4da0407b, type: 3}
   - {fileID: 21300000, guid: b17e8caff88f3774398078a46353b8cc, type: 3}
@@ -82,6 +87,11 @@ SpriteAtlas:
   - you_rock_0
   - you_rock_3
   - you_rock_2
+  - Pressed_4
+  - Pressed_2
+  - Pressed_3
+  - Pressed_0
+  - Pressed_1
   - freds
   - bar
   - Circle

@@ -47,9 +47,11 @@
 			uniform half _GH_Distance, _GH_Fade;
 			fixed4 frag (v2f i) : SV_Target
 			{
+				
 				fixed4 col = tex2D(_MainTex, i.uv);
 				//col.rgb = i.worldPos;
-				col.a = 1-saturate((i.worldPos.z - _GH_Distance)/ _GH_Fade);
+				col.rgb *= (1 - saturate((i.worldPos.z - _GH_Distance) / _GH_Fade));
+				col.a = max(max(col.r,col.g),col.b);
 				return col;
 			}
 			ENDCG
