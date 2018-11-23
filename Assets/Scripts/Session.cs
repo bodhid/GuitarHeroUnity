@@ -167,15 +167,17 @@ public class Session : MonoBehaviour
 			Sync(millisecondsPassed);
 			smoothBpm = smoothing.SmoothBPM(bpm);
 			smoothTick = smoothing.SmoothTick(tick, song.data.info.resolution);
+			bool playGuitarMusic = false;
 			for (int i = 0; i < players.Length; ++i)
 			{
 				players[i].SpawnObjects(tick, beatsPerSecond);
 				players[i].UpdateObjects(smoothTick, noteRenderer, frameIndex);
 				players[i].CreateBar(tick);
 				players[i].UpdateActiveBars(smoothTick);
-				players[i].RegisterHits(smoothTick);
-				players[i].DiscardNotes();
+				players[i].RegisterAndRemove(smoothTick);
+				playGuitarMusic |= players[i].lastNoteHit;
 			}
+			guitarSource.volume = playGuitarMusic ? 1 : 0;
 
 			previousTime = time;
 		}

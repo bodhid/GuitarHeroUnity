@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
 	public uint resolution;
 	public float speed;
 	public uint nextBar;
+	public bool lastNoteHit = true; //mute guitar track?
 
 	[System.Serializable]
 	public class Pool
@@ -111,6 +112,7 @@ public class Player : MonoBehaviour
 		nextBar = resolution;
 		speed = _speed;
 		index = _poolIndex;
+		lastNoteHit = true;
 		activeNotes = new List<NoteInstance>();
 		activeBars = new List<BarInstance>();
 		willRemove = new List<NoteInstance>();
@@ -296,9 +298,9 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	public void RegisterHits(double smoothTick)
+	public void RegisterAndRemove(double smoothTick)
 	{
-
+		bool missedThisFrame = false;
 		//highlighting player input
 		for (int i = 0; i < playerInput.fred.Length; ++i)
 		{
@@ -313,8 +315,7 @@ public class Player : MonoBehaviour
 			//check if notes are available
 			//only create line when it is a bit closer 
 			if (activeNotes.Count > 0&& (activeNotes[0].timestamp<(smoothTick+(window*2))))
-			{
-				
+			{	
 				nextLine.note.Add(activeNotes[0]); //add next note to line
 				nextLine.timestamp = activeNotes[0].timestamp;
 				nextLine.isHammerOn = activeNotes[0].hammeron;
@@ -411,7 +412,6 @@ public class Player : MonoBehaviour
 				//RegisterHits(smoothTick);
 			}
 
-
 			//Check if next line is succes or fail
 			if (nextLine.fail)
 			{
@@ -421,6 +421,8 @@ public class Player : MonoBehaviour
 					willRemove.Add(nextLine.note[i]);
 				}
 				nextLine.Clear();
+				lastNoteHit = false;
+				missedThisFrame = true;
 			}
 			if (nextLine.succes&&!nextLine.fail)
 			{
@@ -434,42 +436,18 @@ public class Player : MonoBehaviour
 					flame[fred].seconds = (1f / 60f * 8f);
 				}
 				nextLine.Clear();
+				lastNoteHit = true;
 			}
-
-			
-			
 		}
 
-		
-			//for (int i = 0; i < activeNotes.Count; ++i)
-			//{
-			//	NoteInstance noteInstance = activeNotes[i];
-
-			//	if (playerInput.strumPressed)
-			//	{
-			//		if (playerInput.fred[noteInstance.fred])
-			//		{
-			//			float distance = Mathf.Abs((float)(tick - noteInstance.timestamp));
-			//			if (distance < resolution/4)
-			//			{
-			//				flame[noteInstance.fred].gameObject.SetActive(true);
-			//				flame[noteInstance.fred].Reset();
-			//				flame[noteInstance.fred].seconds = (1f / 60f * 8f);
-			//				willRemove.Add(noteInstance);
-			//			}
-			//		}
-			//	}
-			//}
-		}
-
-	public void DiscardNotes()
-	{
 		for (int i = willRemove.Count - 1; i > -1; --i)
 		{
 			activeNotes.Remove(willRemove[i]);
 			willRemove[i].noteModel.transform.gameObject.SetActive(false);
 			willRemove.RemoveAt(i);
 		}
+		//if missed a note, do function again to check if next note is hit instead. but break combo
+		if (missedThisFrame) RegisterAndRemove(smoothTick);
 	}
 
 	public double TickDistanceToMeters(double tickDistance)
