@@ -3,7 +3,7 @@ Open Source - Guitar Hero fan game made in Unity.
 
 After seeing the .chart files in Clone Hero, i wanted to see if i could read them in Unity. So I threw this together.
 
-It is not playable yet with a guitar hero controller yet, it simply plays itself for now.
+Now playable with guitar hero controller. Note hit registration can be buggy still.
 
 DOES NOT INCLUDE SONGS.
 You can place songs in the "Place Songs Here" folder, this is found in the root folder.
