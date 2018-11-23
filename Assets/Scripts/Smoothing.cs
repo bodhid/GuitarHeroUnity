@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
 public class Smoothing
 {
 	private double visualOffset=0;
@@ -13,14 +10,7 @@ public class Smoothing
 	}
 	public double SmoothBPM(double bpm)
 	{
-		if (smoothBpm == 0)
-		{
-			smoothBpm = bpm;
-		}
-		else
-		{
-			smoothBpm = (smoothBpm * 0.9d) + (bpm * 0.1d);
-		}
+		smoothBpm = (smoothBpm == 0) ? bpm : ((smoothBpm * 0.9d) + (bpm * 0.1d));
 		return smoothBpm;
 	}
 	public double SmoothTick(double tick, uint resolution)

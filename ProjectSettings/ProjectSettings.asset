@@ -90,7 +90,7 @@ PlayerSettings:
   visibleInBackground: 1
   allowFullscreenSwitch: 1
   graphicsJobMode: 0
-  fullscreenMode: 1
+  fullscreenMode: 0
   xboxSpeechDB: 0
   xboxEnableHeadOrientation: 0
   xboxEnableGuest: 0
@@ -591,7 +591,7 @@ PlayerSettings:
     28: UNITY_POST_PROCESSING_STACK_V2
   platformArchitecture: {}
   scriptingBackend:
-    Standalone: 0
+    Standalone: 1
   il2cppCompilerConfiguration: {}
   incrementalIl2cppBuild: {}
   allowUnsafeCode: 0

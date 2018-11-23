@@ -173,7 +173,7 @@ public class Session : MonoBehaviour
 				players[i].UpdateObjects(smoothTick, noteRenderer, frameIndex);
 				players[i].CreateBar(tick);
 				players[i].UpdateActiveBars(smoothTick);
-				players[i].RegisterHits(tick);
+				players[i].RegisterHits(smoothTick);
 				players[i].DiscardNotes();
 			}
 

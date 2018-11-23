@@ -11,14 +11,12 @@ public class Player : MonoBehaviour
 	public RenderTexture output;
 	public Song song;
 	public List<Song.Note> notes;
-	public Transform cam;
-	public Transform board;
+	public Transform cam, board;
 	public PoolIndex index;
 	public Pool pool;
-	public List<NoteInstance> activeNotes;
-	public List<NoteInstance> willRemove;
-	public List<BarInstance> activeBars;
-	public List<BarInstance> willRemoveBars;
+	public List<NoteInstance> activeNotes, willRemove;
+	public List<BarInstance> activeBars, willRemoveBars;
+	public Line nextLine;
 	public Animation2D[] flame;
 	public GameObject[] fredHighlight;
 	public uint resolution;
@@ -64,6 +62,29 @@ public class Player : MonoBehaviour
 		public uint duration;
 	}
 
+	[System.Serializable]
+	public class Line
+	{
+		public bool available;
+		public int number;
+		public int lowestFred;
+		public double timestamp;
+		public bool[] fred;
+		public List<NoteInstance> note;
+		public bool strumPressed, succes, fail,  isHammerOn;
+		public void Clear()
+		{
+			available = succes = fail = isHammerOn = strumPressed = false;
+			timestamp = 0;
+			lowestFred = 4;
+			note.Clear();
+			for (int i = 0; i < fred.Length; ++i)
+			{
+				fred[i] = false;
+			}
+		}
+	}
+
 	public RenderTexture Initialize(int _playerNumber,Song _song, Song.Difficulty _difficulty,Vector2 _output, Pool _pool, PoolIndex _poolIndex, uint _resolution, float _speed)
 	{
 		playerNumber = _playerNumber;
@@ -94,6 +115,9 @@ public class Player : MonoBehaviour
 		activeBars = new List<BarInstance>();
 		willRemove = new List<NoteInstance>();
 		willRemoveBars = new List<BarInstance>();
+		nextLine = new Line();
+		nextLine.note = new List<NoteInstance>();
+		nextLine.fred = new bool[5];
 
 		output = new RenderTexture(Mathf.CeilToInt(_output.x), Mathf.CeilToInt(_output.y), 16, RenderTextureFormat.ARGB32);
 		cam.GetComponent<Camera>().targetTexture = output;
@@ -118,7 +142,7 @@ public class Player : MonoBehaviour
 			child.gameObject.layer = layerMask;
 			SetLayerRecursive(child, layerMask);
 		}
-		}
+	}
 
 	public NoteModel[] MakePool(int size, GameObject prefab)
 	{
@@ -144,11 +168,7 @@ public class Player : MonoBehaviour
 	{
 		if (index.note >= notes.Count) return; //end of song
 		Song.Note nextNote = notes[index.note];
-
-		//double tenSeconds = Time.deltaTime * 10;
-		//double tenSecondsInBeats =;
 		double tenSecondsInTicks = beatsPerSecond * 3 * resolution;
-
 		if (nextNote.timestamp < tick + MetersToTickDistance(4f)) //spawn tick + 10 seconds?
 		{
 			//Debug.Log("New Note");
@@ -240,13 +260,10 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	
-
 	public void CreateBar(double tick)
 	{
 		if (nextBar < tick + MetersToTickDistance(4f)) //spawn tick + 10 seconds?
 		{
-
 			BarInstance newBar = pool.bar[index.bar % pool.barSize];
 			index.bar++;
 			newBar.gameObject.SetActive(true);
@@ -279,31 +296,171 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	public void RegisterHits(double tick)
+	public void RegisterHits(double smoothTick)
 	{
+
+		//highlighting player input
 		for (int i = 0; i < playerInput.fred.Length; ++i)
 		{
 			fredHighlight[i].SetActive(playerInput.fred[i]);
 		}
-		for (int i = 0; i < activeNotes.Count; ++i)
+
+		double window = resolution/4;
+
+		//check if new line needs to be created
+		if (!nextLine.available)
 		{
-			NoteInstance noteInstance = activeNotes[i];
-			if (playerInput.strumPressed)
+			//check if notes are available
+			//only create line when it is a bit closer 
+			if (activeNotes.Count > 0&& (activeNotes[0].timestamp<(smoothTick+(window*2))))
 			{
-				if (playerInput.fred[noteInstance.fred])
+				
+				nextLine.note.Add(activeNotes[0]); //add next note to line
+				nextLine.timestamp = activeNotes[0].timestamp;
+				nextLine.isHammerOn = activeNotes[0].hammeron;
+				//Debug.Log("Creating new line with timestamp "+nextLine.timestamp);
+				int i = 1;
+				while (i < 5) //check if more notes are on the same timestamp
 				{
-					float distance = Mathf.Abs((float)(tick - noteInstance.timestamp));
-					if (distance < resolution/4)
+					if (i >= activeNotes.Count)
 					{
-						flame[noteInstance.fred].gameObject.SetActive(true);
-						flame[noteInstance.fred].Reset();
-						flame[noteInstance.fred].seconds = (1f / 60f * 8f);
-						willRemove.Add(noteInstance);
+						//Debug.Log("No more active notes");
+						break; //out of range
 					}
+					if (activeNotes[i].timestamp != nextLine.timestamp)
+					{
+						//Debug.Log("active note "+i+" has a different timestamp of "+activeNotes[i].timestamp);
+						break; //different line
+					}
+					//Debug.Log("Adding one more note");
+					nextLine.note.Add(activeNotes[i]);
+					i++;
 				}
+				nextLine.lowestFred = 4;
+				for (int j = 0; j < nextLine.note.Count; ++j)
+				{
+					uint fred = nextLine.note[j].fred;
+					nextLine.lowestFred = Mathf.Min(nextLine.lowestFred, (int)fred);
+					nextLine.fred[fred] = true;
+				}
+				nextLine.available = true;
+				//string debugNotes = "";
+				//for (int j = 0; j < nextLine.note.Count; ++j)
+				//{
+				//	debugNotes += nextLine.note[j].fred.ToString() + " ";
+				//}
+				//Debug.Log("Creating new line with notes "+ debugNotes);
+			}
+			else
+			{
+				//Debug.Log("No New Notes");
 			}
 		}
-	}
+
+		//Check if next line is available now
+		if (nextLine.available)
+		{
+			
+			bool correctColors = true;
+			//ignore freds lower than the lowest one in the next line, these are allowed to be pressed
+			for (int i = nextLine.lowestFred; i < playerInput.fred.Length; ++i)
+			{
+				//Debug.Log("fred "+i+" "+playerInput.fred[i] + " needs to equal " + nextLine.fred[i]);
+				correctColors &= (playerInput.fred[i] == nextLine.fred[i]);
+			}
+			//Debug.Log("Holding correct colors " + correctColors);
+			//Check if strum has already been pressed, 
+			//if the colors are pressed on time afterwards it will register and exit here
+			//also check if hammerOn, then no strum will be necessary
+			if ((nextLine.strumPressed || nextLine.isHammerOn) && correctColors)
+			{
+				nextLine.succes = true;
+				//Debug.Log("Pressed strum after holding correct colors");
+			}
+			else
+			{
+				//check for strum input
+				if (playerInput.strumPressed)
+				{
+					//Debug.Log("Strum Pressed");
+					//check if inside window
+					if (Mathf.Abs((float)(nextLine.timestamp - smoothTick)) <= window)
+					{
+						//Debug.Log("Inside of window! correct colors yet: " + correctColors);
+						//check if double strum pressed, this is a fail
+						if (nextLine.strumPressed) nextLine.fail = true;
+						nextLine.strumPressed = true;
+						if (correctColors && !nextLine.fail) nextLine.succes = true;
+					}
+					else
+					{
+						//Debug.Log("outside of window " + nextLine.timestamp + " - strum: " + smoothTick);
+					}
+					}
+				else
+				{
+					//Debug.Log("Strum not pressed");
+				}
+			}
+
+			if ((nextLine.timestamp - smoothTick) < -window)
+			{
+				nextLine.fail = true;
+				//Debug.Log("Too late. note: " + nextLine.timestamp + ". strum: " + smoothTick);
+				//Redo this function again when too late to see if the next set of notes is hit
+				//RegisterHits(smoothTick);
+			}
+
+
+			//Check if next line is succes or fail
+			if (nextLine.fail)
+			{
+				//Debug.Log("MISS");
+				for (int i = 0; i < nextLine.note.Count; ++i)
+				{
+					willRemove.Add(nextLine.note[i]);
+				}
+				nextLine.Clear();
+			}
+			if (nextLine.succes&&!nextLine.fail)
+			{
+				//Debug.Log("HIT");
+				for (int i = 0; i < nextLine.note.Count; ++i)
+				{
+					willRemove.Add(nextLine.note[i]);
+					uint fred = nextLine.note[i].fred;
+					flame[fred].gameObject.SetActive(true);
+					flame[fred].Reset();
+					flame[fred].seconds = (1f / 60f * 8f);
+				}
+				nextLine.Clear();
+			}
+
+			
+			
+		}
+
+		
+			//for (int i = 0; i < activeNotes.Count; ++i)
+			//{
+			//	NoteInstance noteInstance = activeNotes[i];
+
+			//	if (playerInput.strumPressed)
+			//	{
+			//		if (playerInput.fred[noteInstance.fred])
+			//		{
+			//			float distance = Mathf.Abs((float)(tick - noteInstance.timestamp));
+			//			if (distance < resolution/4)
+			//			{
+			//				flame[noteInstance.fred].gameObject.SetActive(true);
+			//				flame[noteInstance.fred].Reset();
+			//				flame[noteInstance.fred].seconds = (1f / 60f * 8f);
+			//				willRemove.Add(noteInstance);
+			//			}
+			//		}
+			//	}
+			//}
+		}
 
 	public void DiscardNotes()
 	{

@@ -246,7 +246,7 @@ MonoBehaviour:
       preview: {fileID: 0}
   notes: []
   cam: {fileID: 1565596941}
-  board: {fileID: 0}
+  board: {fileID: 1926865661}
   index:
     note: 0
     noteModel: 
@@ -262,6 +262,17 @@ MonoBehaviour:
   willRemove: []
   activeBars: []
   willRemoveBars: []
+  nextLine:
+    available: 0
+    number: 0
+    lowestFred: 0
+    timestamp: 0
+    fred: 
+    note: []
+    strumPressed: 0
+    succes: 0
+    fail: 0
+    isHammerOn: 0
   flame:
   - {fileID: 1016084068}
   - {fileID: 2017444981}
@@ -614,7 +625,7 @@ MonoBehaviour:
   boardLength: 4
   time: 0
   previousTime: 0
-  visualOffset: 0
+  visualOffset: -100
   tick: 0
   smoothTick: 0
   starPowerDuration: 0
@@ -1095,7 +1106,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000018241042}
+  m_AnchoredPosition: {x: 0, y: 0.0000377012}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &349660019
@@ -3371,7 +3382,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1338483193}
-  - component: {fileID: 1338483194}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -3394,19 +3404,6 @@ Transform:
   m_Father: {fileID: 46059196}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1338483194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1338483192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 538bda4d712495043803860429235b4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  boardMesh: {fileID: 1926865661}
-  session: {fileID: 156009447}
 --- !u!1 &1341469477
 GameObject:
   m_ObjectHideFlags: 0
@@ -4573,8 +4570,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1974177369}
   m_HandleRect: {fileID: 1974177368}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.9999999
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4852,7 +4849,7 @@ GameObject:
   - component: {fileID: 1926865664}
   - component: {fileID: 1926865663}
   m_Layer: 0
-  m_Name: Quad
+  m_Name: BoardMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
