@@ -6,6 +6,7 @@ public class PlayerInput
 	public bool[] fred;
 	public bool strumPressed;
 	public bool startPressed;
+	public bool starPressed;
 	public float tilt, whammy;
 
 	public enum Device
@@ -26,11 +27,11 @@ public class PlayerInput
 		fred[2] = XInput.GetButton(deviceId, XInput.Button.Y);
 		fred[3] = XInput.GetButton(deviceId, XInput.Button.X);
 		fred[4] = XInput.GetButton(deviceId, XInput.Button.LB);
-
 		startPressed = XInput.GetButtonDown(deviceId, XInput.Button.Start);
+		starPressed = XInput.GetButtonDown(deviceId, XInput.Button.Back);
 		strumPressed = XInput.GetButtonDown(deviceId, XInput.Button.DPadDown) | XInput.GetButtonDown(deviceId, XInput.Button.DPadUp);
-		tilt = XInput.GetAxis(deviceId, XInput.Axis.RT);
-		whammy = XInput.GetAxis(deviceId, XInput.Axis.LT);
+		tilt = XInput.GetAxis(deviceId, XInput.Axis.RY);
+		whammy = XInput.GetAxis(deviceId, XInput.Axis.RX);
 	}
 }
 

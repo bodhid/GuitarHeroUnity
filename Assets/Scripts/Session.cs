@@ -151,7 +151,7 @@ public class Session : MonoBehaviour
 	
 	void Update()
 	{
-		if (guitarSource != null && guitarSource.isPlaying)
+		if (songSource != null && songSource.isPlaying)
 		{
 			//first get input for this frame
 			for (int i = 0; i < players.Length; ++i)
@@ -159,10 +159,10 @@ public class Session : MonoBehaviour
 				players[i].GetInput();
 			}
 			frameIndex++;
-			time = (guitarSource.time * 1000f);
+			time = (songSource.time * 1000f);
 			float millisecondsPassed = time - previousTime;
-			rhythmSource.time = guitarSource.time;
-			songSource.time = guitarSource.time;
+			rhythmSource.time = songSource.time;
+			guitarSource.time = songSource.time;
 
 			Sync(millisecondsPassed);
 			smoothBpm = smoothing.SmoothBPM(bpm);

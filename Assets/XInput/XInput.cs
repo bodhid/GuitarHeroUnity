@@ -48,7 +48,6 @@ public class XInput : MonoBehaviour
 		{
 			Debug.Log("Joystick Connected - ID:" + i + " - " + joyStickNames[i]);
 		}
-		
 	}
 
 	public static bool GetButton(int player, Button button)
@@ -137,7 +136,7 @@ public class XInput : MonoBehaviour
 		for (int i = 0; i < 4; ++i)
 		{
 			previousState[i] = currentState[i];
-			currentState[i] = GamePad.GetState((PlayerIndex)i);
+			currentState[i] = GamePad.GetState((PlayerIndex)i,GamePadDeadZone.None);
 		}
     }
 	private void OnDestroy()

@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
 	public PlayerInput playerInput;
 	public int layerMask;
 	public Song.Difficulty difficulty;
+	public NoteCounter noteCounter;
 	public RenderTexture output;
 	public Song song;
 	public List<Song.Note> notes;
@@ -120,6 +121,8 @@ public class Player : MonoBehaviour
 		nextLine = new Line();
 		nextLine.note = new List<NoteInstance>();
 		nextLine.fred = new bool[5];
+
+		noteCounter.Initialize();
 
 		output = new RenderTexture(Mathf.CeilToInt(_output.x), Mathf.CeilToInt(_output.y), 16, RenderTextureFormat.ARGB32);
 		cam.GetComponent<Camera>().targetTexture = output;
@@ -312,6 +315,13 @@ public class Player : MonoBehaviour
 		//check if new line needs to be created
 		if (!nextLine.available)
 		{
+			//check if strum bar is hit while there is no new line. this breaks combo
+			if (playerInput.strumPressed)
+			{
+				noteCounter.number = 0;
+				//Debug.Log("Strummed without a new line being available");
+			}
+
 			//check if notes are available
 			//only create line when it is a bit closer 
 			if (activeNotes.Count > 0&& (activeNotes[0].timestamp<(smoothTick+(window*2))))
@@ -395,9 +405,11 @@ public class Player : MonoBehaviour
 					}
 					else
 					{
-						//Debug.Log("outside of window " + nextLine.timestamp + " - strum: " + smoothTick);
+						//strummed too early
+						//Debug.Log("Strummed too early");
+						noteCounter.number = 0;
 					}
-					}
+				}
 				else
 				{
 					//Debug.Log("Strum not pressed");
@@ -421,6 +433,7 @@ public class Player : MonoBehaviour
 					willRemove.Add(nextLine.note[i]);
 				}
 				nextLine.Clear();
+				noteCounter.number = 0;
 				lastNoteHit = false;
 				missedThisFrame = true;
 			}
@@ -436,6 +449,7 @@ public class Player : MonoBehaviour
 					flame[fred].seconds = (1f / 60f * 8f);
 				}
 				nextLine.Clear();
+				noteCounter.number++;
 				lastNoteHit = true;
 			}
 		}
@@ -446,6 +460,11 @@ public class Player : MonoBehaviour
 			willRemove[i].noteModel.transform.gameObject.SetActive(false);
 			willRemove.RemoveAt(i);
 		}
+
+		//update note counter
+		//noteCounter.gameObject.SetActive(noteCounter.number > 30);
+		noteCounter.UpdateCounter();
+
 		//if missed a note, do function again to check if next note is hit instead. but break combo
 		if (missedThisFrame) RegisterAndRemove(smoothTick);
 	}
