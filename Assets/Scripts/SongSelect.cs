@@ -95,11 +95,13 @@ public class SongSelect : MonoBehaviour
 		 });
 
 		while (!prepared) yield return null;
-		Session.PlayerInfo[] players = new Session.PlayerInfo[1];
-		players[0] = new Session.PlayerInfo();
-		players[0].difficulty = Song.Difficulty.Expert;
-		//players[1] = new Session.PlayerInfo();
-		//players[1].difficulty = Song.Difficulty.Expert;
+		Session.PlayerInfo[] players = new Session.PlayerInfo[]
+		{
+			//new Session.PlayerInfo(Song.Difficulty.Easy),
+			//new Session.PlayerInfo(Song.Difficulty.Medium),
+			//new Session.PlayerInfo(Song.Difficulty.Hard),
+			new Session.PlayerInfo(Song.Difficulty.Expert)
+		};
 		session.Initialize(song,players);
 		selectScreen.SetActive(false);
 		Debug.Log("Ready to play");
@@ -109,6 +111,7 @@ public class SongSelect : MonoBehaviour
 			yield return null;
 		}
 		fade.gameObject.SetActive(false);
+		System.GC.Collect();
 		session.StartPlaying();
 	}
 

@@ -12,6 +12,7 @@ public class XInput : MonoBehaviour
 		}
 	}
 	private GamePadState[] previousState, currentState;
+	private int activePlayers = 4;
 	public enum Button
 	{
 		A = 1,
@@ -48,6 +49,11 @@ public class XInput : MonoBehaviour
 		{
 			Debug.Log("Joystick Connected - ID:" + i + " - " + joyStickNames[i]);
 		}
+	}
+
+	public static void SetActivePlayerCount(int players)
+	{
+		instance.activePlayers = players;
 	}
 
 	public static bool GetButton(int player, Button button)
@@ -133,7 +139,7 @@ public class XInput : MonoBehaviour
 
 	void Update()
     {
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < activePlayers; ++i)
 		{
 			previousState[i] = currentState[i];
 			currentState[i] = GamePad.GetState((PlayerIndex)i,GamePadDeadZone.None);
